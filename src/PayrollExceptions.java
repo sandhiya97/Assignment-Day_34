@@ -1,5 +1,5 @@
 
-public class PayrollExceptions extends Throwable {
+public class PayrollExceptions extends Exception {
     enum ExceptionType{
         CONNECTION_PROBLEM, RETRIEVAL_PROBLEM;
     }

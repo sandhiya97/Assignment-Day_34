@@ -41,4 +41,18 @@ public class PayrollServiceTest {
         List<PayrollData> entries = employeePayrollService.readPayrollData(PayrollService.IOService.FILE_IO);
     }
 
+    @Test
+    public void givenEmployeePayrollInDB_whenRetrieved_ShouldMatch_Employee_Count() throws PayrollExceptions {
+        List<PayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(PayrollService.IOService.DB_IO);
+        Assertions.assertEquals(3, employeePayrollData.size());
+    }
+
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdated_shouldSynchronizeWithDB() throws PayrollExceptions {
+        List<PayrollData> employeePayrollData = employeePayrollService.readEmployeePayrollData(PayrollService.IOService.DB_IO);
+        employeePayrollService.updateEmployeeSalary("Rogers",3000000.00);
+        boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Teresa");
+        Assertions.assertTrue(result);
+    }
+
 }

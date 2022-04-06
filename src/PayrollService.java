@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public class PayrollService {
+    private DBConnection employeePayrollDBService;
     public enum IOService {
         CONSOLE_IO, FILE_IO, DB_IO, REST_IO
     }
@@ -28,11 +29,11 @@ public class PayrollService {
     }
 
     public void readEmployeePayrollData(Scanner consoleInputReader) {
-        System.out.println("Enter Employee ID: ");
+        System.out.print("Enter Employee ID: ");
         int id = consoleInputReader.nextInt();
-        System.out.println("Enter Employee Name ");
+        System.out.print("Enter Employee Name ");
         String name = consoleInputReader.next();
-        System.out.println("Enter Employee Salary ");
+        System.out.print("Enter Employee Salary ");
         double salary = consoleInputReader.nextDouble();
         employeePayrollList.add(new PayrollData(id, name, salary));
     }
@@ -69,5 +70,30 @@ public class PayrollService {
         if (ioService.equals(IOService.DB_IO))
             employeePayrollList = new DBConnection().readData();
         return employeePayrollList;
+    }
+
+    public void updateEmployeeSalary(String name, double salary) throws PayrollExceptions {
+        int result = employeePayrollDBService.updateEmployeeData(name, salary);
+        if (result == 0)
+            return;
+        PayrollData employeePayrollData = this.getEmployeePayrollData(name);
+        if (employeePayrollData != null)
+            employeePayrollData.setSalary(salary);
+
+    }
+
+    private PayrollData getEmployeePayrollData(String name) {
+        PayrollData employeePayrollData;
+        employeePayrollData = employeePayrollList.stream()
+                .filter(employeePayrollDataItem -> employeePayrollDataItem.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+        return employeePayrollData;
+    }
+
+    public boolean checkEmployeePayrollInSyncWithDB(String name) {
+        List<PayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
+        return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+
     }
 }
